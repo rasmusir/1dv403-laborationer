@@ -1,4 +1,4 @@
-"use strict";
+
 
 window.onload = function(){
 
@@ -7,13 +7,23 @@ window.onload = function(){
 		// Plats för förändring.		
 		// Returnera den konverterade strängen.
 		// Vid fel, kasta ett undantag med ett meddelande till användaren. 
-	
-
-
-
-
-
-
+		
+		var ret = "";
+		var i = 0;
+		for (let i = i; i < str.length; i++)
+		{
+			var char = str[i];
+			var upper = char.toUpperCase();
+			if (upper == 'A')
+				ret += "#";
+			else if (char != upper)
+				ret += upper;
+			else
+				ret += char.toLowerCase();
+		}
+		
+		return ret;
+		
 	};
 	// ------------------------------------------------------------------------------
 

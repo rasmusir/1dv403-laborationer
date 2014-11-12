@@ -4,14 +4,21 @@ window.onload = function(){
 
 	
 	var birthday = function(date){
+		var bday = new Date(date);
+		var today = new Date();
 		
-
-
-			// Din kod här.
-
-
-
-
+		bday.setFullYear(today.getFullYear());
+		
+		var diff = bday.getTime() - today.getTime();
+		
+		var days = Math.ceil(diff/1000/60/60/24);
+		if (days < 0)
+		{
+			bday.setFullYear(today.getFullYear()+1);
+			diff = bday.getTime() - today.getTime();
+			days = Math.ceil(diff/1000/60/60/24);
+		}
+		return days;
 	};
 	// ------------------------------------------------------------------------------
 
