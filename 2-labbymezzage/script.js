@@ -38,6 +38,7 @@ function Messageboard(name)
             window.clearInterval(self.scroll);
         }
     };
+    
 }
 Messageboard.prototype.addMessage = function(m)
 {
