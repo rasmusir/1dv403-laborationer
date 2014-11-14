@@ -17,6 +17,7 @@ function Messageboard(name)
     this.elements.text.addEventListener("keydown", function(e) {
         if (e.keyCode == 13)
         {
+            e.preventDefault();
             self.addMessage(new Message(self.elements.text.value));
         }
     });
