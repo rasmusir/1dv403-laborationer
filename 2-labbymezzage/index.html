@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>LabbyMezzage</title>
+        <script src="script.js"> </script>
+        <link rel="stylesheet" type="text/css" href="style.css"/>
+    </head>
+    <body>
+        <template id="boardtemplate">
+            
+            <div class="board">
+                <div class="messages">
+                </div>
+                <div class="input">
+                    <textarea class="text"></textarea>
+                    <button class="post">Post</button>
+                </div>
+            </div>
+            
+            <div class="message">
+                
+            </div>
+            
+        </template>
+        
+        <script>
+            var board = new Messageboard();
+            
+            document.body.appendChild(board.board);
+        </script>
+        
+    </body>
+</html>

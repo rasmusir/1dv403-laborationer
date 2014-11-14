@@ -1,0 +1,125 @@
+body
+{
+    margin: 0px;
+    background: skyblue;
+    display: flex;
+    width: 100%;
+    height: 100%;
+    justify-content: space-around;
+    font-family: Calibri,sans-serif;
+}
+
+.board
+{
+    width: 300pt;
+    height: 300pt;
+    background: #fff;
+    border: 1pt solid rgba(0,0,0,0.1);
+    box-shadow: 0px 5px 20px 0px rgba(0,0,0,0.2);
+    margin: 20px;
+    resize: both;
+    overflow: auto;
+    
+    display: -webkit-flex;
+    display: flex;
+    
+    flex-direction: column;
+}
+
+.board .messages
+{
+    flex-grow: 1;
+    margin: 10pt;
+    margin-bottom: 0;
+    border: 1pt solid #bbb;
+    background: #eee;
+    box-shadow: 0px 0px 30pt 0px rgba(0,0,0,0.1) inset;
+    overflow-y: scroll;
+    overflow-x: hidden;
+    resize: none;
+}
+
+
+.board .messages::-webkit-scrollbar
+{
+    background: rgba(0,0,0,0.1);
+    width: 6pt;
+}
+
+.board .messages::-webkit-scrollbar-thumb
+{
+    background: rgba(0,0,0,0.2);
+}
+
+.board .messages .message
+{
+    min-height: 30pt;
+    background: white;
+    border-bottom: 1pt solid #e0e0e0;
+    opacity: 1;
+    -webkit-animation: fadein 0.6s ease 0s 1 normal;
+}
+
+.board .input
+{
+    flex-shrink: 0;
+    margin: 10pt;
+    background: #fff;
+}
+
+.board .input .text
+{
+    height: 60pt;
+    box-sizing: border-box;
+    width: 100%;
+    display: block;
+    border: 1pt solid #bbb;
+    border-bottom: 0;
+    resize: none;
+    overflow: auto;
+}
+
+.board .input .post
+{
+    display: block;
+    width: 100%;
+    height: 20pt;
+    background: linear-gradient(#fff,#ddd);
+    border: 1pt solid #bbb;
+    font-family: Calibri,sans-serif;
+    outline: 0;
+}
+
+.board .input .post:hover
+{
+    border: 1pt solid #aaa;
+}
+
+.board .input .post:active
+{
+    background: linear-gradient(#ddd,#fff);
+    border: 1pt solid #bbb;
+}
+
+.board .input .post:not(:active)
+{
+    -webkit-animation: buttonclick 1s ease 0s 1 normal;
+}
+
+@-webkit-keyframes buttonclick
+{
+    from { box-shadow: 0px 0px 20pt 0px rgba(200,240,255,1) inset }
+    to { box-shadow: 0px 0px 20px 0px rgba(173,216,230,0) inset }
+}
+
+@-webkit-keyframes fadein
+{
+    0% {
+        opacity: 0;
+        transform: translateX(40pt);
+    }
+    100% {
+        opacity: 1;
+        transform: translateX(0pt);
+    }
+}

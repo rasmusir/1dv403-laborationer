@@ -17,6 +17,5 @@ var makePerson = function(persArr){
     result.averageAge = Math.round(result.averageAge/persArr.length);
     result.names = names.join(", ");
     return result;
-    
 }
 
