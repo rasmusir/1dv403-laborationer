@@ -9,4 +9,6 @@ function SimpleWindows()
 {
     this.desktopElement = document.createElement("div");
     this.desktopElement.classList.add("desktop");
+    
+    document.body.appendChild(this.desktopElement);
 }
