@@ -7,5 +7,6 @@ window.addEventListener("load",function()
 
 function SimpleWindows()
 {
-    
+    this.desktopElement = document.createElement("div");
+    this.desktopElement.classList.add("desktop");
 }
