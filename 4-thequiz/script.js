@@ -25,8 +25,8 @@ Quiz.prototype.askQuestion = function(adr)
     {
         if (this.readyState == 4)
         {
+            self.questionCount++;
             self.processResponse(JSON.parse(this.responseText));
-            this.questionCount++;
         }
     };
     
@@ -48,7 +48,7 @@ Quiz.prototype.processResponse = function(response)
             
             this.submit.onclick = function()
             {
-                self.tries[self.questionCount]++;
+                self.tries[self.questionCount] = (self.tries[self.questionCount]+1) || 1;
                 self.sendAnswer(response.nextURL,self.answer.value);
             };
         }
