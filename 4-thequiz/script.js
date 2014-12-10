@@ -1,13 +1,12 @@
 window.onload = function()
 {
     var quiz = new Quiz();
+    quiz.askQuestion("http://vhost3.lnu.se:20080/question/1");
 };
 
 function Quiz()
 {
     this.xmlhttp = new XMLHttpRequest();
-    
-    this.askQuestion("http://vhost3.lnu.se:20080/question/1");
     
     this.question = document.querySelector("#question");
     this.message = document.querySelector("#message");
@@ -17,6 +16,7 @@ function Quiz()
     this.tries = [];
     this.questionCount = 0;
 }
+
 
 Quiz.prototype.askQuestion = function(adr)
 {
@@ -33,6 +33,7 @@ Quiz.prototype.askQuestion = function(adr)
     this.xmlhttp.open("GET",adr,true);
     this.xmlhttp.send();
 };
+
 
 Quiz.prototype.processResponse = function(response)
 {
@@ -62,6 +63,7 @@ Quiz.prototype.processResponse = function(response)
         }
     }
 };
+
 
 Quiz.prototype.sendAnswer = function(adr,ans)
 {

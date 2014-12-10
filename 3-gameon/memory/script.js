@@ -148,6 +148,10 @@ Minesweeper.prototype.trigger = function(x,y,direct)
             }
         }
     }
+    else if (tile.bomb && direct)
+    {
+        alert("LOSER");
+    }
 };
 
 Minesweeper.prototype.plant = function (x,y)

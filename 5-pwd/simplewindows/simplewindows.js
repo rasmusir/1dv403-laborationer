@@ -2,14 +2,15 @@ var sw;
 
 window.addEventListener("load",function()
 {
-    sw = new SimpleWindows();
+    sw = new Desktop();
+    
     var w = new Window(sw);
     
     w.setPosition(100,100);
     w.show();
 });
 
-function SimpleWindows()
+function Desktop()
 {
     this.desktopElement = document.createElement("div");
     this.desktopElement.classList.add("desktop");
@@ -26,7 +27,7 @@ function SimpleWindows()
     document.body.appendChild(this.desktopElement);
 }
 
-SimpleWindows.prototype.updateBackground = function()
+Desktop.prototype.updateBackground = function()
 {
     this.blur.width = 50;
     this.blur.height = 50;
@@ -35,7 +36,6 @@ SimpleWindows.prototype.updateBackground = function()
     this.blur.drawImage(this.background,0,0,50,50);
     
     this.appbar.style.backgroundImage = "url(" + this.blurCanvas.toDataURL() + ")";
-    
 };
 
 

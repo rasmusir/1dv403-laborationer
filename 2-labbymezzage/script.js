@@ -65,6 +65,7 @@ function Messageboard(name)
     };
     
 }
+
 Messageboard.prototype.addMessage = function(m)
 {
     this.elements.messagebox.appendChild(m.element);
@@ -75,19 +76,23 @@ Messageboard.prototype.addMessage = function(m)
     this.scroll = window.setInterval(this.scrollFunc, 10);
     this.count = this.messages.length;
 };
+
 Messageboard.prototype.removeMessage = function(message)
 {
-    this.messages.splice(message.id,1);
-    message.element.style.height = message.element.clientHeight+"px";
-    message.element.style.minHeight = "0px";
-    window.setTimeout(function() {
-        message.element.classList.add("out");
-        message.element.addEventListener('webkitAnimationEnd', function()
-        {
-            message.element.parentElement.removeChild(message.element);
-        });
-    },10)
-    this.count = this.messages.length;
+    if (confirm("Säker på att du vill ta bort meddelandet? :C\n("+message.time.toLocaleString()+")"))
+    {
+        this.messages.splice(message.id,1);
+        message.element.style.height = message.element.clientHeight+"px";
+        message.element.style.minHeight = "0px";
+        window.setTimeout(function() {
+            message.element.classList.add("out");
+            message.element.addEventListener('webkitAnimationEnd', function()
+            {
+                message.element.parentElement.removeChild(message.element);
+            });
+        },10)
+        this.count = this.messages.length;
+    }
 };
 
 function Message(owner,content)
