@@ -4,6 +4,13 @@ body, html
     height: 100%;
     margin: 0;
     padding: 0;
+    font-family: Calibri;
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    -khtml-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
 }
 
 .desktop
@@ -48,7 +55,13 @@ body, html
     flex-shrink: 0;
     height: 24px;
     position: relative;
+    color: white;
+    text-shadow: 0px 0px 5px rgba(0,0,0,0.6);
+    width: 100%;
+    text-align: center;
 }
+
+
 .desktop .window .top .close
 {
     position: absolute;
@@ -59,7 +72,7 @@ body, html
     background: rgba(0,0,0,0.3);
     box-shadow: 0 0;
     border-radius: 100%;
-    transition: background 0.2s;
+    transition: background 0.1s, box-shadow 0.1s;
 }
 .desktop .window .top .close:hover
 {
@@ -71,6 +84,5 @@ body, html
 {
     position: relative;
     flex:auto;
-    background: white;
     margin: 4px;
 }

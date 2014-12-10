@@ -51,7 +51,12 @@ function Window(handler)
     this.close.classList.add("close");
     this.content = document.createElement("div");
     this.content.classList.add("content");
+    this.label = document.createElement("label");
+    this.label.classList.add("label");
     
+    this.label.innerHTML = "Untitled";
+    
+    this.top.appendChild(this.label);
     this.top.appendChild(this.close);
     this.element.appendChild(this.top);
     this.element.appendChild(this.content);
