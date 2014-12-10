@@ -42,6 +42,15 @@ Desktop.prototype.updateBackground = function()
     this.appbar.style.backgroundImage = "url(" + this.blurCanvas.toDataURL() + ")";
 };
 
+Desktop.prototype.closeWindow = function(w)
+{
+    w.element.classList.add("destroy");
+    var self = this;
+    setTimeout(function()
+    {
+        self.desktopElement.removeChild(w.element);
+    },200);
+};
 
 
 function Window(handler)
@@ -52,8 +61,8 @@ function Window(handler)
     this.element.classList.add("window");
     this.top = document.createElement("div");
     this.top.classList.add("top");
-    this.close = document.createElement("div");
-    this.close.classList.add("close");
+    this.closeElement = document.createElement("div");
+    this.closeElement.classList.add("close");
     this.content = document.createElement("div");
     this.content.classList.add("content");
     this.label = document.createElement("label");
@@ -62,7 +71,7 @@ function Window(handler)
     this.label.innerHTML = "Untitled";
     
     this.top.appendChild(this.label);
-    this.top.appendChild(this.close);
+    this.top.appendChild(this.closeElement);
     this.element.appendChild(this.top);
     this.element.appendChild(this.content);
     
@@ -80,6 +89,14 @@ function Window(handler)
     this.handler.desktopElement.addEventListener("mouseup", function()
     {
         self.handler.desktopElement.removeEventListener("mousemove",drag,true);
+    });
+    
+    this.closeElement.addEventListener("mousedown",function(e) {e.stopImmediatePropagation();});
+    
+    this.closeElement.addEventListener("click",function(e)
+    {
+        e.preventDefault();
+        self.close();
     });
 }
 
@@ -101,4 +118,17 @@ Window.prototype.setPosition = function(x,y)
 Window.prototype.drag = function(e)
 {
     this.setPosition(e.clientX - this.drag.offset.x,e.clientY - this.drag.offset.y);
+};
+
+Window.prototype.close = function()
+{
+    if (this.onclose)
+    {
+        if (this.onclose())
+            this.handler.closeWindow(this);
+    }
+    else
+    {
+        this.handler.closeWindow(this);
+    }
 };
