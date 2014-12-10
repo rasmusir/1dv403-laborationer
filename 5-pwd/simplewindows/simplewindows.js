@@ -8,6 +8,10 @@ window.addEventListener("load",function()
     
     w.setPosition(100,100);
     w.show();
+    var w2 = new Window(sw);
+    
+    w2.setPosition(300,100);
+    w2.show();
 });
 
 function Desktop()
@@ -42,6 +46,7 @@ Desktop.prototype.updateBackground = function()
 
 function Window(handler)
 {
+    var self = this;
     this.handler = handler;
     this.element = document.createElement("div");
     this.element.classList.add("window");
@@ -60,6 +65,22 @@ function Window(handler)
     this.top.appendChild(this.close);
     this.element.appendChild(this.top);
     this.element.appendChild(this.content);
+    
+    var drag = function(e)
+    {
+        self.drag(e);
+    };
+    
+    this.top.addEventListener("mousedown", function(e)
+    {
+        self.drag.offset = {x: e.clientX - self.element.offsetLeft, y: e.clientY - self.element.offsetTop};
+        self.handler.desktopElement.addEventListener("mousemove",drag,true);
+    });
+    
+    this.handler.desktopElement.addEventListener("mouseup", function()
+    {
+        self.handler.desktopElement.removeEventListener("mousemove",drag,true);
+    });
 }
 
 Window.prototype.show = function()
@@ -69,6 +90,15 @@ Window.prototype.show = function()
 
 Window.prototype.setPosition = function(x,y)
 {
+    x = Math.max(x,0);
+    y = Math.max(y,0);
+    x = Math.min(x,this.handler.desktopElement.clientWidth-this.element.clientWidth);
+    y = Math.min(y,this.handler.desktopElement.clientHeight-this.element.clientHeight);
     this.element.style.left = x+"px";
     this.element.style.top = y+"px";
+};
+
+Window.prototype.drag = function(e)
+{
+    this.setPosition(e.clientX - this.drag.offset.x,e.clientY - this.drag.offset.y);
 };
