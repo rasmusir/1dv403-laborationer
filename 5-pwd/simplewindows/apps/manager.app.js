@@ -6,5 +6,11 @@ function main(handler)
     var div = document.createElement("div");
     
     w.appendChild(div);
+    
+    
+    var not = new Notification(handler);
+    
+    not.show();
+    
     w.show();
 }

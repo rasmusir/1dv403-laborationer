@@ -4,6 +4,7 @@ window.addEventListener("load",function()
 {
     sd = new Desktop();
     sd.installPackage("simplewindows/apps.json");
+    
 });
 
 function Desktop()
@@ -21,6 +22,9 @@ function Desktop()
     this.instanceID = 1;
     
     this.appbar = new Appbar(this);
+    
+    var self = this;
+    this.desktopElement.addEventListener("contextmenu",function(e) { e.preventDefault(); self.openContextMenu(e);});
     
     document.body.appendChild(this.desktopElement);
     
@@ -83,6 +87,11 @@ Desktop.prototype.installPackage = function(url)
     };
     xhr.open("GET",url,true);
     xhr.send(null);
+};
+
+Desktop.prototype.openContextMenu = function(e)
+{
+    var cm = new ContextMenu(this,{x:e.clientX,y:e.clientY});
 };
 
 function Appbar(handler)
@@ -278,4 +287,56 @@ Window.prototype.close = function()
 Window.prototype.appendChild = function(node)
 {
     this.content.appendChild(node);
+};
+
+function ContextMenu(handler,pos)
+{
+    this.element = document.createElement("div");
+    this.element.classList.add("contextmenu");
+    
+    this.element.style.left = pos.x+"px";
+    this.element.style.top = pos.y+"px";
+    
+    this.element.classList.add("destroy");
+    var self = this;
+    setTimeout(function() {self.element.classList.remove("destroy");}, 0);
+    
+    var close = function(e)
+    {
+        e.preventDefault();
+        if (e.target != self.element)
+        {
+            window.removeEventListener("mousedown",close,true);
+            self.element.classList.add("destroy");
+            setTimeout(function()
+            {
+                handler.desktopElement.removeChild(self.element);
+            },200);
+        }
+    };
+    
+    window.addEventListener("mousedown",close,true);
+    
+    handler.desktopElement.appendChild(this.element);
+}
+
+function Notification(handler)
+{
+    this.handler = handler;
+    
+    this.element = document.createElement("div");
+    this.element.classList.add("notification");
+}
+Notification.prototype.show = function()
+{
+    this.handler.desktopElement.appendChild(this.element);
+    var self = this;
+    setTimeout(function() {self.element.classList.add("show");}, 0);
+    setTimeout(function() {
+        self.element.classList.remove("show");
+        setTimeout(function()
+        {
+            self.handler.removeChild(self.element);
+        },200);
+    }, 5000);
 };

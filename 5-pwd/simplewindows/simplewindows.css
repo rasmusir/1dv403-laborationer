@@ -18,8 +18,11 @@ body, html
 {
     width: 100%;
     height: 100%;
-    background: url("swirl_pattern.png") fixed;
-    background-color: rgba(0,130,255,0.7);
+    background: url("swirl_pattern.png") cover;
+    background: url("wall.jpg");
+    background-position: center;
+    background-size: cover;
+    background-color: rgba(0,130,170,0.7);
 }
 
 .appbar
@@ -35,14 +38,15 @@ body, html
     display: -webkit-flex;
     display: flex;
     align-items: center;
+    justify-content: center;
 }
 
 .appbar .appicon
 {
-    width: 42px;
+    width: 47px;
     height: 36px;
     opacity: 0.9;
-    margin: 0px 5px;
+    margin: 0;
     background-color: rgba(255,255,255,0.1);
     background-repeat: no-repeat;
     background-position: center 50%;
@@ -67,7 +71,7 @@ body, html
     -webkit-flex-direction: column;
     flex-direction: column;
     
-    box-shadow: 0px 0px 10px 10px rgba(0,0,0,0.1);
+    box-shadow: 0px 0px 10px 0px rgba(0,0,0,0.4);
     border-radius: 5px;
     background-color: inherit;
     background-image: url("vertical.png");
@@ -124,7 +128,7 @@ body, html
 .desktop .window .top .close:hover
 {
     background: rgba(255,255,0,0.9);
-    box-shadow: 0 0 10px 0px yellow;
+    box-shadow: 0 0 5px 0px yellow;
 }
 
 .desktop .window .content
@@ -139,4 +143,49 @@ body, html
     -moz-user-select: initial;
     -ms-user-select: initial;
     user-select: initial;
+}
+
+.desktop .contextmenu
+{
+    position: absolute;
+    background-attachment: fixed;
+    background-image: url("vertical.png");
+    background-color: inherit;
+    border: 1px solid rgba(0,0,0,0.1);
+    opacity: 1;
+    left: 0;
+    top: 0;
+    min-width: 150px;
+    min-height: 50px;
+    transform: none;
+    transition: all 0.2s;
+}
+
+.desktop .contextmenu.destroy
+{
+    transform: scale(0.9,0.9);
+    opacity: 0;
+}
+
+.desktop .notification
+{
+    background-attachment: fixed;
+    background-image: url("vertical.png");
+    background-color: inherit;
+    position: absolute;
+    right: 10px;
+    top: 10px;
+    width: 200px;
+    height: 50px;
+    border-radius: 5px;
+    opacity: 0;
+    box-shadow: 0px 0px 10px 0px rgba(0,0,0,0.4);
+    transform: translateY(-10px);
+    transition: all 0.2s;
+}
+
+.desktop .notification.show
+{
+    opacity: 1;
+    transform: none;
 }
