@@ -1,17 +1,9 @@
-var sw;
+var sd;
 
 window.addEventListener("load",function()
 {
-    sw = new Desktop();
-    
-    var w = new Window(sw);
-    
-    w.setPosition(100,100);
-    w.show();
-    var w2 = new Window(sw);
-    
-    w2.setPosition(300,100);
-    w2.show();
+    sd = new Desktop();
+    sd.installPackage("simplewindows/apps.json");
 });
 
 function Desktop()
@@ -24,11 +16,16 @@ function Desktop()
     this.background = new Image();
     this.background.src = "simplewindows/swirl_pattern.png";
     
-    this.appbar = document.createElement("div");
-    this.appbar.classList.add("appbar");
+    this.apps = [];
+    this.instances = [];
+    this.instanceID = 1;
     
-    this.desktopElement.appendChild(this.appbar);
+    this.appbar = new Appbar(this);
+    
     document.body.appendChild(this.desktopElement);
+    
+    this.width = this.desktopElement.clientWidth;
+    this.height = this.desktopElement.clientHeight;
 }
 
 Desktop.prototype.updateBackground = function()
@@ -52,6 +49,114 @@ Desktop.prototype.closeWindow = function(w)
     },200);
 };
 
+Desktop.prototype.install = function(path)
+{
+    var self = this;
+    var xhr = new XMLHttpRequest();
+    xhr.onreadystatechange = function()
+    {
+        if (this.readyState == 4 && this.status == 200)
+        {
+            var app = new App(self,JSON.parse(this.responseText));
+            self.apps.push(app);
+            self.appbar.add(app);
+        }
+    };
+    xhr.open("GET",path,true);
+    xhr.send(null);
+};
+
+Desktop.prototype.installPackage = function(url)
+{
+    var self = this;
+    var xhr = new XMLHttpRequest();
+    xhr.onreadystatechange = function()
+    {
+        if (this.readyState == 4 && this.status == 200)
+        {
+            var json = JSON.parse(this.responseText);
+            json.apps.forEach(function(app)
+            {
+                self.install(app);
+            });
+        }
+    };
+    xhr.open("GET",url,true);
+    xhr.send(null);
+};
+
+function Appbar(handler)
+{
+    this.element = document.createElement("div");
+    this.element.classList.add("appbar");
+    handler.desktopElement.appendChild(this.element);
+    
+    this.apps = [];
+}
+Appbar.prototype.add = function(app)
+{
+    var appIcon = document.createElement("div");
+    appIcon.classList.add("appicon");
+    appIcon.style.backgroundImage = 'url("' + app.icon + '")';
+    appIcon.addEventListener("click",function()
+    {
+        app.createInstance();
+    });
+    this.element.appendChild(appIcon);
+};
+
+function App(handler,meta)
+{
+    var self = this;
+    this.UID = meta.UID;
+    this.name = meta.name;
+    this.icon = meta.icon;
+    this.script = meta.script;
+    this.compiledScript = null;
+    this.handler = handler;
+    
+    var xhr = new XMLHttpRequest();
+    xhr.onreadystatechange = function()
+    {
+        if (this.readyState == 4 && this.status == 200)
+        {
+            try
+            {
+                self.compiledScript = eval("(function() {\n"+this.responseText+"\nif (typeof main == 'function') this.main=main; this.__instance = {}; var __instance = this.__instance;\n})");
+            }
+            catch (e)
+            {
+                throw e;
+            }
+        }
+    };
+    
+    xhr.open("GET",this.script,true);
+    xhr.send(null);
+}
+App.prototype.createInstance = function()
+{
+    var instance = new AppInstance(this);
+    instance.id = this.handler.instanceID;
+    instance.script.__instance.id = this.handler.instanceID;
+    this.handler.instances[this.handler.instanceID] = instance;
+    this.handler.instanceID++;
+    instance.main(this.handler);
+};
+
+function AppInstance(app)
+{
+    this.app = app;
+    this.id = -1;
+    this.script = new app.compiledScript(app.handler);
+}
+AppInstance.prototype.main = function(handler)
+{
+    if (this.script.main)
+        this.script.main(handler);
+    else
+        console.log("No main function in "+this.app.UID);
+};
 
 function Window(handler)
 {
@@ -75,21 +180,31 @@ function Window(handler)
     this.element.appendChild(this.top);
     this.element.appendChild(this.content);
     
+    this.width = this.element.clientWidth;
+    this.height = this.element.clientHeight;
+    
     var drag = function(e)
     {
+        e.preventDefault();
         self.drag(e);
+    };
+    
+    var stopdrag = function(e)
+    {
+        e.preventDefault();
+        self.handler.desktopElement.removeEventListener("mousemove",drag,true);
+        self.handler.desktopElement.removeEventListener("mouseup",stopdrag,true);
     };
     
     this.top.addEventListener("mousedown", function(e)
     {
+        e.preventDefault();
         self.drag.offset = {x: e.clientX - self.element.offsetLeft, y: e.clientY - self.element.offsetTop};
         self.handler.desktopElement.addEventListener("mousemove",drag,true);
+        self.handler.desktopElement.addEventListener("mouseup",stopdrag,true);
     });
     
-    this.handler.desktopElement.addEventListener("mouseup", function()
-    {
-        self.handler.desktopElement.removeEventListener("mousemove",drag,true);
-    });
+    
     
     this.closeElement.addEventListener("mousedown",function(e) {e.stopImmediatePropagation();});
     
@@ -102,7 +217,11 @@ function Window(handler)
 
 Window.prototype.show = function()
 {
+    var self = this;
+    this.element.classList.add("destroy");
+    setTimeout(function() {self.element.classList.remove("destroy");}, 0);
     this.handler.desktopElement.appendChild(this.element);
+    this.setPosition(this.handler.width/2 - this.element.clientWidth/2, this.handler.height/2 - this.element.clientHeight/2);
 };
 
 Window.prototype.setPosition = function(x,y)
@@ -113,6 +232,29 @@ Window.prototype.setPosition = function(x,y)
     y = Math.min(y,this.handler.desktopElement.clientHeight-this.element.clientHeight);
     this.element.style.left = x+"px";
     this.element.style.top = y+"px";
+};
+
+Window.prototype.setSize = function(width,height)
+{
+    this.element.style.width = width+"px";
+    this.element.style.height = height+"px";
+};
+
+Window.prototype.setResize = function(resize)
+{
+    if (resize)
+    {
+        this.element.classList.add("resize");
+    }
+    else
+    {
+        this.element.classList.remove("resize");
+    }
+};
+
+Window.prototype.setTitle = function(title)
+{
+    this.label.innerHTML = title;
 };
 
 Window.prototype.drag = function(e)
@@ -131,4 +273,9 @@ Window.prototype.close = function()
     {
         this.handler.closeWindow(this);
     }
+};
+
+Window.prototype.appendChild = function(node)
+{
+    this.content.appendChild(node);
 };

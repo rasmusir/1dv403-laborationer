@@ -1,0 +1,6 @@
+{
+    "UID" : "ri222ay.about",
+    "name" : "About",
+    "icon" : "simplewindows/icons/32/row 4/2.png",
+    "script" : "simplewindows/apps/about.app.js"
+}

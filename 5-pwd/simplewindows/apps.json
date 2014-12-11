@@ -1,0 +1,7 @@
+{
+    "apps" : [
+        "simplewindows/apps/about.app.json",
+        "simplewindows/apps/manager.app.json",
+        "simplewindows/apps/settings.app.json"
+    ]
+}
