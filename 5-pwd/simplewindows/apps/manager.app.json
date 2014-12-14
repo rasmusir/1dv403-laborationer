@@ -1,6 +1,0 @@
-{
-    "UID" : "ri222ay.manager",
-    "name" : "App Manager",
-    "icon" : "simplewindows/icons/32/row 9/13.png",
-    "script" : "simplewindows/apps/manager.app.js"
-}

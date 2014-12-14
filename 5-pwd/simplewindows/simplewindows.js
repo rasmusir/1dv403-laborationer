@@ -3,6 +3,7 @@ var sd;
 window.addEventListener("load",function()
 {
     sd = new Desktop();
+    
     sd.installPackage("simplewindows/apps.json");
     
 });
@@ -21,6 +22,8 @@ function Desktop()
     this.instances = [];
     this.instanceID = 1;
     
+    this.highestIndex = 0;
+    
     this.appbar = new Appbar(this);
     
     var self = this;
@@ -31,17 +34,6 @@ function Desktop()
     this.width = this.desktopElement.clientWidth;
     this.height = this.desktopElement.clientHeight;
 }
-
-Desktop.prototype.updateBackground = function()
-{
-    this.blur.width = 50;
-    this.blur.height = 50;
-    this.blurCanvas.width = 50;
-    this.blurCanvas.height = 50;
-    this.blur.drawImage(this.background,0,0,50,50);
-    
-    this.appbar.style.backgroundImage = "url(" + this.blurCanvas.toDataURL() + ")";
-};
 
 Desktop.prototype.closeWindow = function(w)
 {
@@ -61,12 +53,12 @@ Desktop.prototype.install = function(path)
     {
         if (this.readyState == 4 && this.status == 200)
         {
-            var app = new App(self,JSON.parse(this.responseText));
+            var app = new App(self,JSON.parse(this.responseText),path);
             self.apps.push(app);
             self.appbar.add(app);
         }
     };
-    xhr.open("GET",path,true);
+    xhr.open("GET",path+"/app.json");
     xhr.send(null);
 };
 
@@ -94,6 +86,11 @@ Desktop.prototype.openContextMenu = function(e)
     var cm = new ContextMenu(this,{x:e.clientX,y:e.clientY});
 };
 
+Desktop.prototype.setThemeColor = function(color)
+{
+    this.desktopElement.style.backgroundColor = color;
+};
+
 function Appbar(handler)
 {
     this.element = document.createElement("div");
@@ -114,12 +111,13 @@ Appbar.prototype.add = function(app)
     this.element.appendChild(appIcon);
 };
 
-function App(handler,meta)
+function App(handler,meta,path)
 {
     var self = this;
     this.UID = meta.UID;
     this.name = meta.name;
     this.icon = meta.icon;
+    this.path = path;
     this.script = meta.script;
     this.compiledScript = null;
     this.handler = handler;
@@ -140,7 +138,7 @@ function App(handler,meta)
         }
     };
     
-    xhr.open("GET",this.script,true);
+    xhr.open("GET",this.path + "/app.js",true);
     xhr.send(null);
 }
 App.prototype.createInstance = function()
@@ -148,6 +146,7 @@ App.prototype.createInstance = function()
     var instance = new AppInstance(this);
     instance.id = this.handler.instanceID;
     instance.script.__instance.id = this.handler.instanceID;
+    instance.script.__instance.destroy = instance.destroy;
     this.handler.instances[this.handler.instanceID] = instance;
     this.handler.instanceID++;
     instance.main(this.handler);
@@ -165,6 +164,10 @@ AppInstance.prototype.main = function(handler)
         this.script.main(handler);
     else
         console.log("No main function in "+this.app.UID);
+};
+AppInstance.prototype.destroy = function()
+{
+    
 };
 
 function Window(handler)
@@ -213,9 +216,15 @@ function Window(handler)
         self.handler.desktopElement.addEventListener("mouseup",stopdrag,true);
     });
     
+    this.element.addEventListener("mousedown",function()
+    {
+        self.element.style.zIndex = self.handler.highestIndex+1;
+        self.handler.highestIndex++;
+    });
     
-    
-    this.closeElement.addEventListener("mousedown",function(e) {e.stopImmediatePropagation();});
+    this.closeElement.addEventListener("mousedown",function(e) {
+        e.stopImmediatePropagation();
+    });
     
     this.closeElement.addEventListener("click",function(e)
     {
@@ -229,6 +238,8 @@ Window.prototype.show = function()
     var self = this;
     this.element.classList.add("destroy");
     setTimeout(function() {self.element.classList.remove("destroy");}, 0);
+    this.element.style.zIndex = this.handler.highestIndex+1;
+    this.handler.highestIndex++;
     this.handler.desktopElement.appendChild(this.element);
     this.setPosition(this.handler.width/2 - this.element.clientWidth/2, this.handler.height/2 - this.element.clientHeight/2);
 };
@@ -264,6 +275,17 @@ Window.prototype.setResize = function(resize)
 Window.prototype.setTitle = function(title)
 {
     this.label.innerHTML = title;
+};
+
+Window.prototype.setColor = function(color)
+{
+    this.element.style.backgroundColor = color;
+};
+
+Window.prototype.setOverflow = function(x,y)
+{
+    this.content.style.overflowX = x;
+    this.content.style.overflowY = y;
 };
 
 Window.prototype.drag = function(e)
@@ -320,13 +342,21 @@ function ContextMenu(handler,pos)
     handler.desktopElement.appendChild(this.element);
 }
 
-function Notification(handler)
+function Notification(handler,text)
 {
     this.handler = handler;
     
     this.element = document.createElement("div");
     this.element.classList.add("notification");
+    if (text)
+    {
+        this.setText(text);
+    }
 }
+Notification.prototype.setText = function(text)
+{
+    this.element.innerHTML = text;
+};
 Notification.prototype.show = function()
 {
     this.handler.desktopElement.appendChild(this.element);
@@ -336,7 +366,7 @@ Notification.prototype.show = function()
         self.element.classList.remove("show");
         setTimeout(function()
         {
-            self.handler.removeChild(self.element);
+            self.handler.desktopElement.removeChild(self.element);
         },200);
     }, 5000);
 };

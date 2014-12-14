@@ -1,7 +1,9 @@
 {
     "apps" : [
-        "simplewindows/apps/about.app.json",
-        "simplewindows/apps/manager.app.json",
-        "simplewindows/apps/settings.app.json"
+        "simplewindows/apps/about",
+        "simplewindows/apps/manager",
+        "simplewindows/apps/settings",
+        "simplewindows/apps/chat",
+        "simplewindows/apps/mmo"
     ]
 }
